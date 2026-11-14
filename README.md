@@ -1,6 +1,19 @@
-# r4py
+<div align="center">
 
-**R, bundled in a Python wheel.**
+<h1><img src="logo.svg" alt="r4py" width="440" /></h1>
+
+**R, ready to roll.**
+
+A complete R runtime in a Python wheel.
+
+[![PyPI](https://img.shields.io/pypi/v/r4py?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/r4py/)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![R 4.6.2](https://img.shields.io/badge/R-4.6.2-276DC3?style=flat-square&logo=r&logoColor=white)](https://www.r-project.org/)
+[![Wheels](https://github.com/JGalego/r4py/actions/workflows/wheels.yml/badge.svg)](https://github.com/JGalego/r4py/actions/workflows/wheels.yml)
+[![Platforms](https://img.shields.io/badge/platforms-Linux%20%7C%20macOS%20%7C%20Windows-475569?style=flat-square)](#install)
+[![Licenses: MIT and GPL-2.0-or-later](https://img.shields.io/badge/license-MIT%20%26%20GPL--2.0%2B-475569?style=flat-square)](#licensing)
+
+</div>
 
 No system R installation. No runtime dependencies on Python packages. No downloads on import. No changes to your process environment.
 
@@ -10,7 +23,7 @@ No system R installation. No runtime dependencies on Python packages. No downloa
 pip install r4py
 ```
 
-Wheels contain R **4.6.2**, base and recommended packages, `libR`, headers, help files, and `R CMD` tools. Version `4.6.2.0` means R `4.6.2`, packaging revision `0`.
+Wheels contain R **4.6.2**, base and recommended packages, `libR`, headers, help files, and `R CMD` tools. The Windows wheel omits the CRAN uninstaller and combined reference-manual PDF; individual package help and manuals remain included. Version `4.6.2.0` means R `4.6.2`, packaging revision `0`.
 
 The release workflow targets:
 

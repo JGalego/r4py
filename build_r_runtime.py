@@ -199,6 +199,15 @@ def main() -> None:
         )
         staged = work / "r-runtime"
         shutil.copytree(source, staged)
+        if os.name == "nt":
+            for filename in (
+                "unins000.exe",
+                "unins000.dat",
+                "doc/manual/fullrefman.pdf",
+            ):
+                path = staged / filename
+                if path.exists():
+                    path.unlink()
         if os.name != "nt":
             _relocate(staged)
         if sys.platform == "linux":

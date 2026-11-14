@@ -16,6 +16,8 @@ def main() -> None:
     parser.add_argument("wheel", type=Path)
     args = parser.parse_args()
     wheel = args.wheel.resolve()
+    if wheel.stat().st_size > 100 * 1024 * 1024:
+        raise RuntimeError(f"{wheel.name} exceeds PyPI's default 100 MiB file limit.")
     runtime = ROOT / "src/r4py/r-runtime"
     hidden = runtime.with_name("r-runtime.build-backup")
     if hidden.exists():
