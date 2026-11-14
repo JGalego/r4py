@@ -132,9 +132,24 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           python -m pip install delocate
-          DYLD_LIBRARY_PATH="$PWD/src/r4py/r-runtime/lib" \
-            delocate-wheel --exclude .class --require-archs "$(uname -m)" \
-              -w wheelhouse dist/*.whl
+          DYLD_LIBRARY_PATH="$PWD/src/r4py/r-runtime/lib" python - <<'PY'
+          import os
+          import platform
+          from pathlib import Path
+          from delocate.delocating import delocate_wheel
+          from packaging.version import Version
+
+          output = Path("wheelhouse")
+          output.mkdir(exist_ok=True)
+          for wheel in Path("dist").glob("*.whl"):
+              delocate_wheel(
+                  str(wheel),
+                  str(output / wheel.name),
+                  lib_filt_func=lambda path: not path.endswith(".class"),
+                  require_archs=[platform.machine()],
+                  require_target_macos_version=Version(os.environ["MACOSX_DEPLOYMENT_TARGET"]),
+              )
+          PY
       - name: Stage Windows wheel
         if: runner.os == 'Windows'
         run: mkdir -p wheelhouse && cp dist/*.whl wheelhouse/
