@@ -42,6 +42,7 @@ def main() -> None:
                 "R_INCLUDE_DIR",
                 "R_DOC_DIR",
                 "R_LD_LIBRARY_PATH",
+                "CURL_CA_BUNDLE",
             ):
                 env.pop(key, None)
             env["R4PY_REQUIRE_RUNTIME"] = "1"

@@ -6,6 +6,7 @@ import os
 import re
 import runpy
 import shutil
+import ssl
 import subprocess
 import sys
 import tempfile
@@ -85,6 +86,8 @@ def _relocate(runtime: Path) -> None:
     text = (
         text[:start]
         + 'R_HOME_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd -P) || exit 1\n'
+        + 'CURL_CA_BUNDLE=${CURL_CA_BUNDLE:-"${R_HOME_DIR}/etc/curl-ca-bundle.crt"}\n'
+        + "export CURL_CA_BUNDLE\n"
         + text[end:]
     )
     for variable, directory in (
@@ -130,10 +133,32 @@ def _relocate(runtime: Path) -> None:
     native.write_text(
         "#!/bin/sh\n"
         'RHOME=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd -P) || exit 1\n'
-        "export RHOME\n"
+        'CURL_CA_BUNDLE=${CURL_CA_BUNDLE:-"${RHOME}/etc/curl-ca-bundle.crt"}\n'
+        "export RHOME CURL_CA_BUNDLE\n"
         'exec "${RHOME}/bin/Rscript.bin" "$@"\n'
     )
     native.chmod(0o755)
+
+
+def _bundle_certificates(runtime: Path) -> None:
+    bundle = runtime / "etc/curl-ca-bundle.crt"
+    if not bundle.is_file():
+        candidates = (
+            ssl.get_default_verify_paths().cafile,
+            "/opt/homebrew/etc/ca-certificates/cert.pem",
+            "/usr/local/etc/ca-certificates/cert.pem",
+            "/etc/ssl/certs/ca-certificates.crt",
+            "/etc/pki/tls/certs/ca-bundle.crt",
+        )
+        source = next(
+            (Path(path) for path in candidates if path and Path(path).is_file()),
+            None,
+        )
+        if source is None:
+            raise RuntimeError(
+                "No CA certificate bundle found; install ca-certificates."
+            )
+        shutil.copy2(source, bundle)
 
 
 def _build(work: Path, archive: Path | None, jobs: int) -> Path:
@@ -210,6 +235,7 @@ def main() -> None:
                     path.unlink()
         if os.name != "nt":
             _relocate(staged)
+            _bundle_certificates(staged)
         if sys.platform == "linux":
             _bundle_linux_libraries(staged)
         binary = staged / ("bin/x64/Rscript.exe" if os.name == "nt" else "bin/Rscript")

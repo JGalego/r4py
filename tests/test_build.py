@@ -1,4 +1,5 @@
 import hashlib
+import ssl
 
 import pytest
 
@@ -56,6 +57,18 @@ def test_invalid_build_arguments_do_not_start_a_build(monkeypatch, tmp_path):
         with pytest.raises(SystemExit) as result:
             builder.main()
         assert result.value.code == 2
+
+
+def test_certificates_survive_repeated_runtime_preparation(tmp_path, monkeypatch):
+    (tmp_path / "etc").mkdir()
+    source = tmp_path / "system-certificates.pem"
+    source.write_bytes(b"system certificates")
+    paths = ssl.get_default_verify_paths()._replace(cafile=str(source))
+    monkeypatch.setattr(builder.ssl, "get_default_verify_paths", lambda: paths)
+    builder._bundle_certificates(tmp_path)
+    source.unlink()
+    builder._bundle_certificates(tmp_path)
+    assert (tmp_path / "etc/curl-ca-bundle.crt").read_bytes() == b"system certificates"
 
 
 def test_existing_runtime_is_never_overwritten(monkeypatch, tmp_path):

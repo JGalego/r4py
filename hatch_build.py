@@ -22,6 +22,8 @@ class CustomBuildHook(BuildHookInterface[WheelBuilderConfig]):
         )
         if sysconfig.get_platform().startswith("macosx"):
             binaries[-1] = "lib/libR.dylib"
+        if os.name != "nt":
+            binaries.append("etc/curl-ca-bundle.crt")
         for binary in binaries:
             if not (runtime / binary).is_file():
                 raise RuntimeError(

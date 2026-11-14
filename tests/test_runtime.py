@@ -64,6 +64,30 @@ def test_statistics_and_recommended_native_packages() -> None:
     assert result.stdout == "ok"
 
 
+def test_https_package_downloads_work_without_a_system_ca_path(tmp_path: Path) -> None:
+    env = dict(os.environ)
+    env.pop("CURL_CA_BUNDLE", None)
+    target = tmp_path / "PACKAGES.gz"
+    rscript(
+        "-e",
+        "options(warn=2); download.file("
+        "'https://cloud.r-project.org/src/contrib/PACKAGES.gz', "
+        "commandArgs(TRUE)[1], method='libcurl', quiet=TRUE)",
+        str(target),
+        env=env,
+    )
+    assert target.read_bytes().startswith(b"\x1f\x8b")
+
+
+def test_certificate_environment_override_is_preserved() -> None:
+    result = rscript(
+        "-e",
+        "cat(Sys.getenv('CURL_CA_BUNDLE'))",
+        env=get_env({"CURL_CA_BUNDLE": "/custom/certificates.pem"}),
+    )
+    assert result.stdout == "/custom/certificates.pem"
+
+
 def test_scripts_stdin_and_argument_boundaries(tmp_path: Path) -> None:
     script = tmp_path / "script with spaces.R"
     script.write_text("cat(paste(commandArgs(TRUE), collapse='|'))")

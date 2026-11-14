@@ -23,7 +23,7 @@ No system R installation. No runtime dependencies on Python packages. No downloa
 pip install r4py
 ```
 
-Wheels contain R **4.6.2**, base and recommended packages, `libR`, headers, help files, and `R CMD` tools. The Windows wheel omits the CRAN uninstaller and combined reference-manual PDF; individual package help and manuals remain included. Version `4.6.2.0` means R `4.6.2`, packaging revision `0`.
+Wheels contain R **4.6.2**, base and recommended packages, `libR`, headers, help files, and `R CMD` tools. The Windows wheel omits the CRAN uninstaller and combined reference-manual PDF; individual package help and manuals remain included. Version `4.6.2.1` means R `4.6.2`, packaging revision `1`.
 
 The release workflow targets:
 
@@ -33,7 +33,7 @@ The release workflow targets:
 | macOS 15+ | Intel, Apple Silicon |
 | Windows 10+ | x86-64 |
 
-Linux wheels are repaired with auditwheel; macOS wheels with delocate. Alpine/musl and Windows ARM64 are not supported. Python 3.10+ is required. This repository must be built and published before `pip install r4py` can install this implementation from PyPI.
+Linux wheels are repaired with auditwheel; macOS wheels with delocate. Alpine/musl and Windows ARM64 are not supported. Python 3.10+ is required.
 
 ## Python
 
@@ -87,7 +87,7 @@ Recommended packages, including Matrix, MASS, survival, and lattice, are already
 r4py --vanilla -e 'lib <- path.expand("~/r4py-library"); dir.create(lib, recursive=TRUE, showWarnings=FALSE); install.packages("jsonlite", lib=lib, repos="https://cloud.r-project.org")'
 ```
 
-Set `R_LIBS_USER` to that directory for subsequent runs. Package installation uses the network. Compiling source packages requires native build tools and any package-specific system libraries; Windows uses Rtools. `R CMD config` also requires make on Unix. These tools are not bundled. Neither RStudio nor a desktop GUI is included. Headless PDF and PNG graphics are supported.
+Set `R_LIBS_USER` to that directory for subsequent runs. Package installation uses the network. Unix wheels include a CA certificate bundle so HTTPS downloads do not depend on the build machine's certificate paths; set `CURL_CA_BUNDLE` to use your own PEM certificate bundle. Compiling source packages requires native build tools and any package-specific system libraries; Windows uses Rtools. `R CMD config` also requires make on Unix. These tools are not bundled. Neither RStudio nor a desktop GUI is included. Headless PDF and PNG graphics are supported.
 
 ## Build and test
 
@@ -100,7 +100,7 @@ uv run --no-sync python build_r_runtime.py
 uv build --wheel
 ```
 
-Unix builds need a C/C++/Fortran toolchain, make, tar, and development files for curl, bzip2, xz, zlib, PCRE2, ICU, readline, Cairo, PNG, JPEG, and TIFF. For example, use the manylinux container recipe in [the wheel workflow](.github/workflows/wheels.yml). `--jobs N` controls compilation parallelism. `--source-archive PATH` uses a local tarball with the same pinned SHA-256 verification.
+Unix builds need a C/C++/Fortran toolchain, make, tar, a CA certificate bundle, and development files for curl, bzip2, xz, zlib, PCRE2, ICU, readline, Cairo, PNG, JPEG, and TIFF. For example, use the manylinux container recipe in [the wheel workflow](.github/workflows/wheels.yml). `--jobs N` controls compilation parallelism. `--source-archive PATH` uses a local tarball with the same pinned SHA-256 verification.
 
 On Windows, or to reuse a native R installation:
 
@@ -136,7 +136,7 @@ The [logo](logo.svg) combines the [Python two-snakes device](https://www.python.
 
 ## Releases and PyPI
 
-Release each supported stable R version separately: R `4.6.2` uses r4py `4.6.2.0` and tag `v4.6.2.0`; packaging-only fixes increment the fourth component. Keep previous releases available so users can pin their R runtime.
+Release each supported stable R version separately: r4py `4.6.2.1` and tag `v4.6.2.1` bundle R `4.6.2`, with packaging revision `1`. Packaging-only fixes increment the fourth component. Keep previous releases available so users can pin their R runtime.
 
 For the first PyPI upload, add a pending publisher at [PyPI account publishing](https://pypi.org/manage/account/publishing/):
 
@@ -153,7 +153,7 @@ The workflow's display name is **Wheels**, but PyPI needs its filename, `wheels.
 A release tag builds and tests the source distribution and five wheels without publishing. Once trusted publishing is configured and the release's corresponding source materials are available, run **Wheels** manually on that tag with **publish** enabled:
 
 ```sh
-gh workflow run wheels.yml --ref v4.6.2.0 -f publish=true
+gh workflow run wheels.yml --ref v4.6.2.1 -f publish=true
 ```
 
 Publishing uses the `pypi` GitHub environment. Add required reviewers if the repository's billing plan supports them; otherwise the explicit manual publish input is the release gate. Before publishing, verify third-party notices and make the exact corresponding sources for R and bundled dependencies available alongside the binaries.
