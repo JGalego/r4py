@@ -1,0 +1,78 @@
+[build-system]
+requires = ["hatchling>=1.33"]
+build-backend = "hatchling.build"
+
+[project]
+name = "r4py"
+dynamic = ["version"]
+description = "R, bundled in a Python wheel."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT AND GPL-2.0-or-later"
+license-files = ["LICENSE"]
+dependencies = []
+keywords = ["R", "runtime", "statistics"]
+classifiers = [
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Typing :: Typed",
+]
+
+[project.scripts]
+r4py = "r4py.__main__:main"
+r4py-r = "r4py.__main__:r_main"
+
+[dependency-groups]
+dev = [
+    "build>=1.2",
+    "hatchling>=1.33",
+    "pytest>=8",
+    "ruff>=0.11",
+    "pyright>=1.1.400",
+]
+
+[tool.hatch.version]
+path = "src/r4py/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/r4py"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"src/r4py/r-runtime" = "r4py/r-runtime"
+
+[tool.hatch.build.targets.wheel.hooks.custom]
+path = "hatch_build.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src/r4py",
+    "/tests",
+    "/.github/workflows",
+    "/build_r_runtime.py",
+    "/hatch_build.py",
+    "/pyproject.toml",
+    "/README.md",
+    "/LICENSE",
+    "/uv.lock",
+]
+exclude = ["/src/r4py/r-runtime"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "."]
+addopts = "-ra"
+markers = ["runtime: requires the bundled R runtime"]
+
+[tool.ruff]
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pyright]
+include = ["src", "build_r_runtime.py", "hatch_build.py"]
+pythonVersion = "3.10"
+typeCheckingMode = "strict"
+

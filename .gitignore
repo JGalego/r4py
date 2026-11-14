@@ -1,0 +1,14 @@
+.venv/
+.build/
+dist/
+wheelhouse/
+src/r4py/r-runtime/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.Rhistory
+.RData
+Rplots.pdf
+

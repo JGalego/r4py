@@ -1,0 +1,137 @@
+name: Wheels
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  linux:
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            arch: x86_64
+          - runner: ubuntu-24.04-arm
+            arch: aarch64
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and repair
+        run: |
+          docker run --rm -v "$PWD:/work" -w /work \
+            quay.io/pypa/manylinux_2_28_${{ matrix.arch }} \
+            bash -euxc '
+              dnf install -y libcurl-devel bzip2-devel xz-devel zlib-devel \
+                pcre2-devel libicu-devel readline-devel cairo-devel \
+                libpng-devel libjpeg-turbo-devel libtiff-devel
+              PY=/opt/python/cp312-cp312/bin/python
+              "$PY" -m pip install build
+              "$PY" build_r_runtime.py --jobs 4
+              cp -a /usr/share/licenses src/r4py/r-runtime/dependency-licenses
+              rpm -qa --qf "%{NAME} %{VERSION}-%{RELEASE} %{SOURCERPM}\n" \
+                > src/r4py/r-runtime/dependency-sources.txt
+              "$PY" -m build --wheel
+              AUDITWHEEL_LD_LIBRARY_PATH=/work/src/r4py/r-runtime/lib \
+                auditwheel repair --strip --plat manylinux_2_28_${{ matrix.arch }} \
+                -w wheelhouse dist/*.whl
+            '
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Test installed wheel
+        run: python tests/smoke_wheel.py wheelhouse/*.whl
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheels-linux-${{ matrix.arch }}
+          path: wheelhouse/*.whl
+
+  native:
+    runs-on: ${{ matrix.runner }}
+    env:
+      MACOSX_DEPLOYMENT_TARGET: "15.0"
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [macos-15, macos-15-intel, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install build
+      - name: Select R version
+        id: r
+        run: |
+          VERSION=$(python -c 'import runpy; print(".".join(runpy.run_path("src/r4py/__init__.py")["__version__"].split(".")[:3]))')
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+      - uses: r-lib/actions/setup-r@v2
+        if: runner.os == 'Windows'
+        with:
+          r-version: ${{ steps.r.outputs.version }}
+          use-public-rspm: false
+      - name: Copy Windows R
+        if: runner.os == 'Windows'
+        run: |
+          R_HOME=$(Rscript --vanilla -e 'cat(R.home())')
+          python build_r_runtime.py --runtime "$R_HOME"
+      - name: Build macOS R
+        if: runner.os == 'macOS'
+        run: |
+          brew install gcc pkgconf curl pcre2 xz icu4c readline cairo \
+            libpng jpeg-turbo libtiff
+          FC="$(find "$(brew --prefix gcc)/bin" -name 'gfortran-*' | head -1)"
+          test -n "$FC"
+          PKG_CONFIG_PATH="$(brew --prefix curl)/lib/pkgconfig:$(brew --prefix icu4c)/lib/pkgconfig:$(brew --prefix readline)/lib/pkgconfig"
+          CPPFLAGS="-I$(brew --prefix curl)/include -I$(brew --prefix readline)/include"
+          LDFLAGS="-L$(brew --prefix curl)/lib -L$(brew --prefix readline)/lib"
+          export FC PKG_CONFIG_PATH CPPFLAGS LDFLAGS
+          python build_r_runtime.py --jobs 4
+          brew info --json=v2 --installed \
+            > src/r4py/r-runtime/dependency-sources.json
+          CELLAR=$(brew --cellar)
+          (cd "$CELLAR" && find . -type f \
+            \( -iname 'license*' -o -iname 'copying*' -o -iname 'copyright*' \) \
+            -print0) | tar -C "$CELLAR" --null -T - \
+              -cf src/r4py/r-runtime/dependency-licenses.tar
+      - name: Build wheel
+        run: python -m build --wheel
+      - name: Repair macOS wheel
+        if: runner.os == 'macOS'
+        run: |
+          python -m pip install delocate
+          DYLD_LIBRARY_PATH="$PWD/src/r4py/r-runtime/lib" \
+            delocate-wheel --require-archs "$(uname -m)" -w wheelhouse dist/*.whl
+      - name: Stage Windows wheel
+        if: runner.os == 'Windows'
+        run: mkdir -p wheelhouse && cp dist/*.whl wheelhouse/
+      - name: Test installed wheel
+        run: python tests/smoke_wheel.py wheelhouse/*.whl
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheels-${{ matrix.runner }}
+          path: wheelhouse/*.whl
+
+  publish:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [linux, native]
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-*
+          merge-multiple: true
+          path: dist
+      - uses: pypa/gh-action-pypi-publish@release/v1
+
