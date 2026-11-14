@@ -119,5 +119,27 @@ r4py's Python code is MIT licensed. Bundled R is **GPL-2.0-or-later**; its packa
 
 R source: [R-4.6.2.tar.gz](https://cran.r-project.org/src/base/R-4/R-4.6.2.tar.gz) (SHA-256 `c297040f6392b1dac6e5c0eb398422cfdaedf540ae2205edb9ad0d10cb10ee00`). The build script contains the launcher modifications and is also included in the bundled runtime. Preserve R's `COPYING` and package notices when redistributing. Binary redistribution must comply with R and dependency source-distribution requirements; linking or embedding R may impose further GPL obligations.
 
-To publish, configure PyPI trusted publishing and a protected `pypi` GitHub environment. Before approving a release, verify third-party notices and make the exact corresponding sources for R and bundled dependencies available alongside the binaries. A `v4.6.2.0` tag builds, tests, and publishes the five wheels only after that environment is approved.
+## Releases and PyPI
+
+Release each supported stable R version separately: R `4.6.2` uses r4py `4.6.2.0` and tag `v4.6.2.0`; packaging-only fixes increment the fourth component. Keep previous releases available so users can pin their R runtime.
+
+For the first PyPI upload, add a pending publisher at [PyPI account publishing](https://pypi.org/manage/account/publishing/):
+
+| Field | Value |
+| --- | --- |
+| PyPI project name | `r4py` |
+| Repository owner | `JGalego` |
+| Repository name | `r4py` |
+| Workflow filename | `wheels.yml` |
+| Environment name | `pypi` |
+
+The workflow's display name is **Wheels**, but PyPI needs its filename, `wheels.yml`, without the `.github/workflows/` prefix. No PyPI API token is needed.
+
+A release tag builds and tests the source distribution and five wheels without publishing. Once trusted publishing is configured and the release's corresponding source materials are available, run **Wheels** manually on that tag with **publish** enabled:
+
+```sh
+gh workflow run wheels.yml --ref v4.6.2.0 -f publish=true
+```
+
+Publishing uses the `pypi` GitHub environment. Add required reviewers if the repository's billing plan supports them; otherwise the explicit manual publish input is the release gate. Before publishing, verify third-party notices and make the exact corresponding sources for R and bundled dependencies available alongside the binaries.
 

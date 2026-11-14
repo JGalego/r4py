@@ -2,6 +2,11 @@ name: Wheels
 
 on:
   workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish to PyPI after configuring trusted publishing (run on a release tag)
+        type: boolean
+        default: false
   push:
     tags: ["v*"]
   pull_request:
@@ -10,6 +15,25 @@ permissions:
   contents: read
 
 jobs:
+  source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+      - name: Check release tag
+        run: |
+          VERSION=$(python -c 'import runpy; print(runpy.run_path("src/r4py/__init__.py")["__version__"])')
+          if [ "$GITHUB_REF_TYPE" = tag ]; then
+            test "$GITHUB_REF_NAME" = "v$VERSION"
+          fi
+      - run: uv build --sdist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: source
+          path: dist/*.tar.gz
+
   linux:
     runs-on: ${{ matrix.runner }}
     strategy:
@@ -121,13 +145,17 @@ jobs:
           path: wheelhouse/*.whl
 
   publish:
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs: [linux, native]
+    if: github.event_name == 'workflow_dispatch' && inputs.publish && startsWith(github.ref, 'refs/tags/v')
+    needs: [source, linux, native]
     runs-on: ubuntu-latest
     environment: pypi
     permissions:
       id-token: write
     steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: source
+          path: dist
       - uses: actions/download-artifact@v4
         with:
           pattern: wheels-*
