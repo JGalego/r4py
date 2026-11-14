@@ -1,6 +1,7 @@
 """Refuse runtime-less wheels and mark native data as platform-specific."""
 
 import os
+import platform
 import runpy
 import subprocess
 import sysconfig
@@ -45,5 +46,9 @@ class CustomBuildHook(BuildHookInterface[WheelBuilderConfig]):
                 f"Bundled R version {result.stdout!r} does not match {expected}."
             )
         build_data["pure_python"] = False
-        platform = sysconfig.get_platform().replace("-", "_").replace(".", "_")
-        build_data["tag"] = f"py3-none-{platform}"
+        tag = sysconfig.get_platform().replace("-", "_").replace(".", "_")
+        if tag.startswith("macosx"):
+            target = os.environ.get("MACOSX_DEPLOYMENT_TARGET", platform.mac_ver()[0])
+            target = "_".join(target.split(".")[:2])
+            tag = f"macosx_{target}_{platform.machine()}"
+        build_data["tag"] = f"py3-none-{tag}"
