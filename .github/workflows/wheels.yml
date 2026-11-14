@@ -114,9 +114,9 @@ jobs:
             libpng jpeg-turbo libtiff
           FC="$(find "$(brew --prefix gcc)/bin" -name 'gfortran-*' | head -1)"
           test -n "$FC"
-          PKG_CONFIG_PATH="$(brew --prefix curl)/lib/pkgconfig:$(brew --prefix icu4c)/lib/pkgconfig:$(brew --prefix readline)/lib/pkgconfig"
-          CPPFLAGS="-I$(brew --prefix curl)/include -I$(brew --prefix readline)/include"
-          LDFLAGS="-L$(brew --prefix curl)/lib -L$(brew --prefix readline)/lib"
+          PKG_CONFIG_PATH="$(brew --prefix)/lib/pkgconfig:$(brew --prefix curl)/lib/pkgconfig:$(brew --prefix icu4c)/lib/pkgconfig:$(brew --prefix readline)/lib/pkgconfig"
+          CPPFLAGS="-I$(brew --prefix)/include -I$(brew --prefix curl)/include -I$(brew --prefix readline)/include -I$(brew --prefix icu4c)/include"
+          LDFLAGS="-L$(brew --prefix)/lib -L$(brew --prefix curl)/lib -L$(brew --prefix readline)/lib -L$(brew --prefix icu4c)/lib"
           export FC PKG_CONFIG_PATH CPPFLAGS LDFLAGS
           python build_r_runtime.py --jobs 4
           brew info --json=v2 --installed \
