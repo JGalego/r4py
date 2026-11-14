@@ -45,12 +45,11 @@ def test_native_paths_work_without_setting_an_environment(tmp_path: Path) -> Non
         env=env,
         cwd=tmp_path,
     )
-    assert result.stdout.splitlines() == [
-        ".".join(map(str, R_VERSION)),
-        str(R_HOME).replace("\\", "/"),
-    ]
+    version, home = result.stdout.splitlines()
+    assert version == ".".join(map(str, R_VERSION))
+    assert Path(home).samefile(R_HOME)
     home = subprocess.check_output([R, "RHOME"], text=True, env=env).strip()
-    assert home.replace("\\", "/") == str(R_HOME).replace("\\", "/")
+    assert Path(home).samefile(R_HOME)
 
 
 def test_statistics_and_recommended_native_packages() -> None:
@@ -98,7 +97,11 @@ def test_graphics_and_r_cmd(tmp_path: Path) -> None:
         check=True,
         timeout=60,
     )
-    assert result.stdout.strip()
+    if os.name == "nt":
+        version = ".".join(map(str, R_VERSION))
+        assert (result.stdout + result.stderr).startswith(f"R version {version}")
+    else:
+        assert result.stdout.strip()
 
 
 def test_installing_and_loading_a_package_in_a_writable_library(tmp_path: Path) -> None:
@@ -143,4 +146,4 @@ def test_python_environment_overrides_conflicting_system_r() -> None:
         "cat(R.home())",
         env=get_env({"R_HOME": "/wrong", "RHOME": "/wrong", "R_ARCH": "/wrong"}),
     )
-    assert result.stdout.replace("\\", "/") == str(R_HOME).replace("\\", "/")
+    assert Path(result.stdout).samefile(R_HOME)
