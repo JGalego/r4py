@@ -1,6 +1,6 @@
 <div align="center">
 
-<h1><img src="logo.svg" alt="r4py" width="440" /></h1>
+<h1><img src="logo.svg" alt="Python snakes combined with the R logo" width="200" /></h1>
 
 **R, ready to roll.**
 
@@ -131,6 +131,8 @@ Without a built runtime, integration tests skip. Release CI requires them, insta
 r4py's Python code is MIT licensed. Bundled R is **GPL-2.0-or-later**; its packages and linked libraries retain their own licenses. Do not treat the wheel as MIT-only. The Unix wheel recipes retain dependency license notices and the exact RPM or Homebrew source-package inventory.
 
 R source: [R-4.6.2.tar.gz](https://cran.r-project.org/src/base/R-4/R-4.6.2.tar.gz) (SHA-256 `c297040f6392b1dac6e5c0eb398422cfdaedf540ae2205edb9ad0d10cb10ee00`). The build script contains the launcher modifications and is also included in the bundled runtime. Preserve R's `COPYING` and package notices when redistributing. Binary redistribution must comply with R and dependency source-distribution requirements; linking or embedding R may impose further GPL obligations.
+
+The [logo](logo.svg) combines the [Python two-snakes device](https://www.python.org/community/logos/), a trademark of the Python Software Foundation, with the [R logo](https://www.r-project.org/logo/), copyright 2016 The R Foundation. The R artwork and composite arrangement are [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/); the R artwork is scaled and layered with the Python device. The Python device retains its original shape and colors and remains subject to the [PSF trademark usage policy](https://www.python.org/psf/trademarks/). Neither foundation's endorsement is implied.
 
 ## Releases and PyPI
 

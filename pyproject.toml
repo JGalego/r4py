@@ -5,13 +5,13 @@ build-backend = "hatchling.build"
 [project]
 name = "r4py"
 dynamic = ["version"]
-description = "R, bundled in a Python wheel."
+description = "R, ready to roll. A complete R runtime in a Python wheel."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT AND GPL-2.0-or-later"
 license-files = ["LICENSE"]
 dependencies = []
-keywords = ["R", "runtime", "statistics"]
+keywords = ["R", "runtime", "statistics", "r-runtime", "bundled", "cross-platform"]
 classifiers = [
     "Operating System :: MacOS",
     "Operating System :: Microsoft :: Windows",
@@ -54,6 +54,7 @@ include = [
     "/hatch_build.py",
     "/pyproject.toml",
     "/README.md",
+    "/logo.svg",
     "/LICENSE",
     "/uv.lock",
 ]
