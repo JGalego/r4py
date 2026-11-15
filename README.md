@@ -1,6 +1,6 @@
 <div align="center">
 
-<h1><img src="logo.svg" alt="Python snakes combined with the R logo" width="200" /></h1>
+<h1>r4py</h1>
 
 **R, ready to roll.**
 
@@ -9,7 +9,7 @@ A complete R runtime in a Python wheel.
 [![PyPI](https://img.shields.io/pypi/v/r4py?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/r4py/)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 [![R 4.6.2](https://img.shields.io/badge/R-4.6.2-276DC3?style=flat-square&logo=r&logoColor=white)](https://www.r-project.org/)
-[![Wheels](https://github.com/JGalego/r4py/actions/workflows/wheels.yml/badge.svg)](https://github.com/JGalego/r4py/actions/workflows/wheels.yml)
+[![Wheels](https://img.shields.io/pypi/wheel/r4py?style=flat-square)](https://pypi.org/project/r4py/#files)
 [![Platforms](https://img.shields.io/badge/platforms-Linux%20%7C%20macOS%20%7C%20Windows-475569?style=flat-square)](#install)
 [![Licenses: MIT and GPL-2.0-or-later](https://img.shields.io/badge/license-MIT%20%26%20GPL--2.0%2B-475569?style=flat-square)](#licensing)
 
@@ -23,7 +23,7 @@ No system R installation. No runtime dependencies on Python packages. No downloa
 pip install r4py
 ```
 
-Wheels contain R **4.6.2**, base and recommended packages, `libR`, headers, help files, and `R CMD` tools. The Windows wheel omits the CRAN uninstaller and combined reference-manual PDF; individual package help and manuals remain included. Version `4.6.2.1` means R `4.6.2`, packaging revision `1`.
+Wheels contain R **4.6.2**, base and recommended packages, `libR`, headers, help files, and `R CMD` tools. The Windows wheel omits the CRAN uninstaller and combined reference-manual PDF; individual package help and manuals remain included. Version `4.6.2.2` means R `4.6.2`, packaging revision `2`.
 
 The release workflow targets:
 
@@ -132,11 +132,11 @@ r4py's Python code is MIT licensed. Bundled R is **GPL-2.0-or-later**; its packa
 
 R source: [R-4.6.2.tar.gz](https://cran.r-project.org/src/base/R-4/R-4.6.2.tar.gz) (SHA-256 `c297040f6392b1dac6e5c0eb398422cfdaedf540ae2205edb9ad0d10cb10ee00`). The build script contains the launcher modifications and is also included in the bundled runtime. Preserve R's `COPYING` and package notices when redistributing. Binary redistribution must comply with R and dependency source-distribution requirements; linking or embedding R may impose further GPL obligations.
 
-The [logo](logo.svg) combines the [Python two-snakes device](https://www.python.org/community/logos/), a trademark of the Python Software Foundation, with the [R logo](https://www.r-project.org/logo/), copyright 2016 The R Foundation. The R artwork and composite arrangement are [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/); the R artwork is scaled and layered with the Python device. The Python device retains its original shape and colors and remains subject to the [PSF trademark usage policy](https://www.python.org/psf/trademarks/). Neither foundation's endorsement is implied.
+The logo included in the [source distribution](https://pypi.org/project/r4py/#files) combines the [Python two-snakes device](https://www.python.org/community/logos/), a trademark of the Python Software Foundation, with the [R logo](https://www.r-project.org/logo/), copyright 2016 The R Foundation. The R artwork and composite arrangement are [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/); the R artwork is scaled and layered with the Python device. The Python device retains its original shape and colors and remains subject to the [PSF trademark usage policy](https://www.python.org/psf/trademarks/). Neither foundation's endorsement is implied.
 
 ## Releases and PyPI
 
-Release each supported stable R version separately: r4py `4.6.2.1` and tag `v4.6.2.1` bundle R `4.6.2`, with packaging revision `1`. Packaging-only fixes increment the fourth component. Keep previous releases available so users can pin their R runtime.
+Release each supported stable R version separately: r4py `4.6.2.2` and tag `v4.6.2.2` bundle R `4.6.2`, with packaging revision `2`. Packaging-only fixes increment the fourth component. Keep previous releases available so users can pin their R runtime.
 
 For the first PyPI upload, add a pending publisher at [PyPI account publishing](https://pypi.org/manage/account/publishing/):
 
@@ -153,7 +153,7 @@ The workflow's display name is **Wheels**, but PyPI needs its filename, `wheels.
 A release tag builds and tests the source distribution and five wheels without publishing. Once trusted publishing is configured and the release's corresponding source materials are available, run **Wheels** manually on that tag with **publish** enabled:
 
 ```sh
-gh workflow run wheels.yml --ref v4.6.2.1 -f publish=true
+gh workflow run wheels.yml --ref v4.6.2.2 -f publish=true
 ```
 
 Publishing uses the `pypi` GitHub environment. Add required reviewers if the repository's billing plan supports them; otherwise the explicit manual publish input is the release gate. Before publishing, verify third-party notices and make the exact corresponding sources for R and bundled dependencies available alongside the binaries.
