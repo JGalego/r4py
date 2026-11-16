@@ -5,7 +5,7 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Final
 
-__version__ = "4.6.2.2"
+__version__ = "4.6.2.3"
 
 R_HOME: Final = Path(__file__).resolve().parent / "r-runtime"
 R: Final = R_HOME / ("bin/x64/R.exe" if os.name == "nt" else "bin/R")
