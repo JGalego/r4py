@@ -1,6 +1,6 @@
 <div align="center">
 
-<h1>r4py</h1>
+<h1><img src="https://raw.githubusercontent.com/JGalego/r4py/main/logo.svg" alt="Python snakes combined with the R logo" width="200" /></h1>
 
 **R, ready to roll.**
 
@@ -9,7 +9,7 @@ A complete R runtime in a Python wheel.
 [![PyPI](https://img.shields.io/pypi/v/r4py?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/r4py/)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 [![R 4.6.2](https://img.shields.io/badge/R-4.6.2-276DC3?style=flat-square&logo=r&logoColor=white)](https://www.r-project.org/)
-[![Wheels](https://img.shields.io/pypi/wheel/r4py?style=flat-square)](https://pypi.org/project/r4py/#files)
+[![Wheels](https://github.com/JGalego/r4py/actions/workflows/wheels.yml/badge.svg)](https://github.com/JGalego/r4py/actions/workflows/wheels.yml)
 [![Platforms](https://img.shields.io/badge/platforms-Linux%20%7C%20macOS%20%7C%20Windows-475569?style=flat-square)](#install)
 [![Licenses: MIT and GPL-2.0-or-later](https://img.shields.io/badge/license-MIT%20%26%20GPL--2.0%2B-475569?style=flat-square)](#licensing)
 
@@ -132,7 +132,7 @@ r4py's Python code is MIT licensed. Bundled R is **GPL-2.0-or-later**; its packa
 
 R source: [R-4.6.2.tar.gz](https://cran.r-project.org/src/base/R-4/R-4.6.2.tar.gz) (SHA-256 `c297040f6392b1dac6e5c0eb398422cfdaedf540ae2205edb9ad0d10cb10ee00`). The build script contains the launcher modifications and is also included in the bundled runtime. Preserve R's `COPYING` and package notices when redistributing. Binary redistribution must comply with R and dependency source-distribution requirements; linking or embedding R may impose further GPL obligations.
 
-The logo included in the [source distribution](https://pypi.org/project/r4py/#files) combines the [Python two-snakes device](https://www.python.org/community/logos/), a trademark of the Python Software Foundation, with the [R logo](https://www.r-project.org/logo/), copyright 2016 The R Foundation. The R artwork and composite arrangement are [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/); the R artwork is scaled and layered with the Python device. The Python device retains its original shape and colors and remains subject to the [PSF trademark usage policy](https://www.python.org/psf/trademarks/). Neither foundation's endorsement is implied.
+The logo, shown above and included in the [source distribution](https://pypi.org/project/r4py/#files), combines the [Python two-snakes device](https://www.python.org/community/logos/), a trademark of the Python Software Foundation, with the [R logo](https://www.r-project.org/logo/), copyright 2016 The R Foundation. The R artwork and composite arrangement are [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/); the R artwork is scaled and layered with the Python device. The Python device retains its original shape and colors and remains subject to the [PSF trademark usage policy](https://www.python.org/psf/trademarks/). Neither foundation's endorsement is implied.
 
 ## Releases and PyPI
 
