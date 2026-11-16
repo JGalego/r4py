@@ -35,6 +35,17 @@ The release workflow targets:
 
 Linux wheels are repaired with auditwheel; macOS wheels with delocate. Alpine/musl and Windows ARM64 are not supported. Python 3.10+ is required.
 
+## Why r4py?
+
+| | r4py | System R / conda R | rpy2 |
+| --- | --- | --- | --- |
+| Install | `pip install r4py` | OS package manager or conda | needs an existing R |
+| Bundles R | yes | yes | no |
+| Python-to-R object bridge | no | no | yes |
+| Best for | running `R`/`Rscript` from Python projects and CI | general R work | in-process R calls |
+
+r4py pairs well with rpy2 when you want a pinned R runtime and an object bridge.
+
 ## Python
 
 ```python
@@ -67,6 +78,8 @@ run(
 
 This is a runtime distribution, not a Python-to-R object bridge. Use subprocesses, files, or an independently installed bridge such as rpy2.
 
+Check the installed version with `r4py.__version__` (packaging version, e.g. `4.6.2.3`) or `R_VERSION` (bundled R, e.g. `(4, 6, 2)`). `r4py --version` is passed through to Rscript and reports R's own version.
+
 ## Command line
 
 ```sh
@@ -88,6 +101,13 @@ r4py --vanilla -e 'lib <- path.expand("~/r4py-library"); dir.create(lib, recursi
 ```
 
 Set `R_LIBS_USER` to that directory for subsequent runs. Package installation uses the network. Unix wheels include a CA certificate bundle so HTTPS downloads do not depend on the build machine's certificate paths; set `CURL_CA_BUNDLE` to use your own PEM certificate bundle. Compiling source packages requires native build tools and any package-specific system libraries; Windows uses Rtools. `R CMD config` also requires make on Unix. These tools are not bundled. Neither RStudio nor a desktop GUI is included. Headless PDF and PNG graphics are supported.
+
+## Troubleshooting
+
+- **`No matching distribution found`**: wheels require Python 3.10+, glibc 2.28+ on Linux, and macOS 15+. Alpine/musl and Windows ARM64 are unsupported; pip falls back to the source distribution, which contains no R.
+- **`bundled R is missing`**: you installed the source distribution or are running from a checkout. Install a platform wheel or run `build_r_runtime.py`.
+- **Wrong R or library picked up**: use `get_env()` for child processes, and `--vanilla` to skip user startup files.
+- **Package compilation fails**: install native build tools (Rtools on Windows); they are not bundled.
 
 ## Build and test
 
