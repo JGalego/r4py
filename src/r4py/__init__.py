@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Final
 if TYPE_CHECKING:
     from .session import RError, RSession, RWarning
 
-__version__ = "4.6.2.3"
+__version__ = "4.6.2.4"
 
 R_HOME: Final = Path(__file__).resolve().parent / "r-runtime"
 R: Final = R_HOME / ("bin/x64/R.exe" if os.name == "nt" else "bin/R")

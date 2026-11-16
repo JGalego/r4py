@@ -23,7 +23,7 @@ No system R installation. No runtime dependencies on Python packages. No downloa
 pip install r4py
 ```
 
-Wheels contain R **4.6.2**, base and recommended packages, `libR`, headers, help files, and `R CMD` tools. The Windows wheel omits the CRAN uninstaller and combined reference-manual PDF; individual package help and manuals remain included. Version `4.6.2.3` means R `4.6.2`, packaging revision `3`.
+Wheels contain R **4.6.2**, base and recommended packages, `libR`, headers, help files, and `R CMD` tools. The Windows wheel omits the CRAN uninstaller and combined reference-manual PDF; individual package help and manuals remain included. Version `4.6.2.4` means R `4.6.2`, packaging revision `4`.
 
 The release workflow targets:
 
@@ -78,7 +78,7 @@ run(
 
 r4py is a runtime distribution, not an in-process bridge. Run R with subprocesses or files, or use `RSession` below for plain-data calls.
 
-Check the installed version with `r4py.__version__` (packaging version, e.g. `4.6.2.3`) or `R_VERSION` (bundled R, e.g. `(4, 6, 2)`). `r4py --version` is passed through to Rscript and reports R's own version.
+Check the installed version with `r4py.__version__` (packaging version, e.g. `4.6.2.4`) or `R_VERSION` (bundled R, e.g. `(4, 6, 2)`). `r4py --version` is passed through to Rscript and reports R's own version.
 
 ## Calling R from Python
 
@@ -181,7 +181,7 @@ The logo, shown above and included in the [source distribution](https://pypi.org
 
 ## Releases and PyPI
 
-Release each supported stable R version separately: r4py `4.6.2.3` and tag `v4.6.2.3` bundle R `4.6.2`, with packaging revision `3`. Packaging-only fixes increment the fourth component. Keep previous releases available so users can pin their R runtime.
+Release each supported stable R version separately: r4py `4.6.2.4` and tag `v4.6.2.4` bundle R `4.6.2`, with packaging revision `4`. Changes to r4py itself, whether fixes or features, increment the fourth component. Keep previous releases available so users can pin their R runtime.
 
 For the first PyPI upload, add a pending publisher at [PyPI account publishing](https://pypi.org/manage/account/publishing/):
 
@@ -198,7 +198,7 @@ The workflow's display name is **Wheels**, but PyPI needs its filename, `wheels.
 A release tag builds and tests the source distribution and five wheels without publishing. Once trusted publishing is configured and the release's corresponding source materials are available, run **Wheels** manually on that tag with **publish** enabled:
 
 ```sh
-gh workflow run wheels.yml --ref v4.6.2.3 -f publish=true
+gh workflow run wheels.yml --ref v4.6.2.4 -f publish=true
 ```
 
 Publishing uses the `pypi` GitHub environment. Add required reviewers if the repository's billing plan supports them; otherwise the explicit manual publish input is the release gate. Before publishing, verify third-party notices and make the exact corresponding sources for R and bundled dependencies available alongside the binaries.

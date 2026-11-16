@@ -1,8 +1,8 @@
 # Changelog
 
-Versions are `R_VERSION.REVISION`: `4.6.2.3` bundles R 4.6.2, packaging revision 3. Only the revision changes for packaging-only fixes.
+Versions are `R_VERSION.REVISION`: `4.6.2.4` bundles R 4.6.2, packaging revision 4. Only the revision changes for fixes and features in r4py itself.
 
-## Unreleased
+## 4.6.2.4
 
 - Add `RSession`, a persistent R worker process with `eval`, `assign` and `call`, returning plain Python data (pandas data frames when pandas is installed). No compiler or R packages needed.
 
