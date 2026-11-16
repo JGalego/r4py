@@ -107,18 +107,36 @@ jobs:
         run: |
           R_HOME=$(Rscript --vanilla -e 'cat(R.home())')
           python build_r_runtime.py --runtime "$R_HOME"
-      - name: Build macOS R
+      - name: Install macOS build dependencies
         if: runner.os == 'macOS'
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+          HOMEBREW_NO_INSTALL_CLEANUP: "1"
+          HOMEBREW_NO_ENV_HINTS: "1"
         run: |
           brew install gcc@14 pkgconf curl pcre2 xz icu4c readline cairo \
             libpng jpeg-turbo libtiff
+          # The cached runtime is only valid for these exact dependency versions.
+          DEPS=$(brew list --versions gcc@14 pkgconf curl pcre2 xz icu4c readline \
+            cairo libpng jpeg-turbo libtiff | sort | shasum -a 256 | cut -c1-16)
+          echo "BREW_DEPS_HASH=$DEPS" >> "$GITHUB_ENV"
+      - name: Restore macOS R runtime
+        id: runtime-cache
+        if: runner.os == 'macOS'
+        uses: actions/cache@v6
+        with:
+          path: src/r4py/r-runtime
+          key: r-runtime-${{ matrix.runner }}-${{ steps.r.outputs.version }}-${{ env.BREW_DEPS_HASH }}-${{ hashFiles('build_r_runtime.py') }}
+      - name: Build macOS R
+        if: runner.os == 'macOS' && steps.runtime-cache.outputs.cache-hit != 'true'
+        run: |
           FC="$(brew --prefix gcc@14)/bin/gfortran-14"
           test -x "$FC"
           PKG_CONFIG_PATH="$(brew --prefix)/lib/pkgconfig:$(brew --prefix curl)/lib/pkgconfig:$(brew --prefix icu4c)/lib/pkgconfig:$(brew --prefix readline)/lib/pkgconfig"
           CPPFLAGS="-I$(brew --prefix)/include -I$(brew --prefix curl)/include -I$(brew --prefix readline)/include -I$(brew --prefix icu4c)/include"
           LDFLAGS="-L$(brew --prefix)/lib -L$(brew --prefix curl)/lib -L$(brew --prefix readline)/lib -L$(brew --prefix icu4c)/lib"
           export FC PKG_CONFIG_PATH CPPFLAGS LDFLAGS
-          python build_r_runtime.py --jobs 4
+          python build_r_runtime.py --jobs "$(sysctl -n hw.ncpu)"
           brew info --json=v2 --installed \
             > src/r4py/r-runtime/dependency-sources.json
           CELLAR=$(brew --cellar)

@@ -10,6 +10,7 @@ Versions are `R_VERSION.REVISION`: `4.6.2.3` bundles R 4.6.2, packaging revision
 - Add a "Why r4py?" comparison and troubleshooting section to the README.
 - Export `__version__` from `r4py`.
 - CI: update GitHub Actions to current majors (Node 24) and pin runners to `ubuntu-24.04`.
+- CI: cache the built macOS R runtime so packaging-only releases skip the R compile.
 - Add a pre-commit configuration (ruff, pyright, file hygiene).
 - Add this changelog.
 
