@@ -41,10 +41,10 @@ Linux wheels are repaired with auditwheel; macOS wheels with delocate. Alpine/mu
 | --- | --- | --- | --- |
 | Install | `pip install r4py` | OS package manager or conda | needs an existing R |
 | Bundles R | yes | yes | no |
-| Python-to-R object bridge | no | no | yes |
-| Best for | running `R`/`Rscript` from Python projects and CI | general R work | in-process R calls |
+| Call R from Python objects | `RSession` (separate process, plain data) | no | yes (in-process, R objects) |
+| Best for | running R from Python projects and CI with nothing else installed | general R work | deep in-process integration |
 
-r4py pairs well with rpy2 when you want a pinned R runtime and an object bridge.
+rpy2 has not been verified against the bundled R. In our test, rpy2 3.6 crashed while initialising R 4.6 in ABI mode, and its API mode needs a compiler new enough for R 4.6's headers. Use `RSession` below instead.
 
 ## Python
 
@@ -76,9 +76,32 @@ run(
 
 `get_env()` copies `os.environ`, applies your overrides, then sets the bundled R home, include, share, and documentation paths. It removes inherited R sub-architecture and R loader overrides. It never changes `os.environ`.
 
-This is a runtime distribution, not a Python-to-R object bridge. Use subprocesses, files, or an independently installed bridge such as rpy2.
+r4py is a runtime distribution, not an in-process bridge. Run R with subprocesses or files, or use `RSession` below for plain-data calls.
 
 Check the installed version with `r4py.__version__` (packaging version, e.g. `4.6.2.3`) or `R_VERSION` (bundled R, e.g. `(4, 6, 2)`). `r4py --version` is passed through to Rscript and reports R's own version.
+
+## Calling R from Python
+
+`RSession` starts R once and keeps it running, so variables and loaded packages persist between calls. It needs no compiler and no R packages.
+
+```python
+from r4py import RSession
+
+with RSession() as r:
+    r.assign("x", [1, 2, 3, 4])
+    r.eval("mean(x)")  # 2.5
+    r.call("stats::sd", [1, 2, 3, 4])  # 1.29...
+    r.eval("summary(lm(mpg ~ wt, mtcars))$r.squared")
+    df = r.eval("head(mtcars)")  # pandas.DataFrame if pandas is installed
+```
+
+- `eval(code)` returns the value of the last expression. `print()` output goes to `sys.stdout`, R messages to `sys.stderr`, and R warnings become `RWarning`. Pass `echo=False` to discard printed output.
+- R errors raise `RError`, and the session remains usable. If R itself dies, `RError` is raised and `restart()` starts a fresh process; `restart()` also discards all R state.
+- Python to R: `None`, `bool`, `int`, `float`, `str`, lists and tuples (vectors when the elements share a type, otherwise lists), dicts (named lists), numpy arrays, and pandas data frames. `None` inside a vector becomes `NA`.
+- R to Python: `NULL` and `NA` are `None`; length-one vectors are scalars; longer vectors are lists; named vectors and lists are dicts; matrices are lists of rows; factors and dates are strings; data frames are `pandas.DataFrame` or, without pandas, a dict of column lists. Functions, environments and S4 objects raise `RError`.
+- Values are copied as text, so this suits results and moderate data, not huge objects. Sessions are not thread-safe. Use `subprocess` with `RSCRIPT` for batch scripts.
+
+This is not an in-process bridge like rpy2: R objects stay in R, and only plain data crosses.
 
 ## Command line
 

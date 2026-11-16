@@ -2,6 +2,10 @@
 
 Versions are `R_VERSION.REVISION`: `4.6.2.3` bundles R 4.6.2, packaging revision 3. Only the revision changes for packaging-only fixes.
 
+## Unreleased
+
+- Add `RSession`, a persistent R worker process with `eval`, `assign` and `call`, returning plain Python data (pandas data frames when pandas is installed). No compiler or R packages needed.
+
 ## 4.6.2.3
 
 - README: restore the logo using an absolute URL so it renders on PyPI.
