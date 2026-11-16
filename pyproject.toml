@@ -11,14 +11,31 @@ requires-python = ">=3.10"
 license = "MIT AND GPL-2.0-or-later"
 license-files = ["LICENSE"]
 dependencies = []
-keywords = ["R", "runtime", "statistics", "r-runtime", "bundled", "cross-platform"]
+keywords = ["R", "Rscript", "rpy2-alternative", "wheel", "runtime", "statistics", "r-runtime", "bundled", "cross-platform"]
 classifiers = [
     "Operating System :: MacOS",
     "Operating System :: Microsoft :: Windows",
     "Operating System :: POSIX :: Linux",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: R",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development :: Build Tools",
     "Typing :: Typed",
 ]
+
+[project.urls]
+Homepage = "https://github.com/JGalego/r4py"
+Source = "https://github.com/JGalego/r4py"
+Issues = "https://github.com/JGalego/r4py/issues"
+Changelog = "https://github.com/JGalego/r4py/blob/main/CHANGELOG.md"
 
 [project.scripts]
 r4py = "r4py.__main__:main"
