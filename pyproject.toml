@@ -94,4 +94,3 @@ select = ["E", "F", "I", "UP", "B"]
 include = ["src", "build_r_runtime.py", "hatch_build.py"]
 pythonVersion = "3.10"
 typeCheckingMode = "strict"
-

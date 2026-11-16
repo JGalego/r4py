@@ -23,4 +23,3 @@ SOFTWARE.
 This license covers r4py's Python code and build tooling, not bundled R or its
 dependencies. R is licensed under GPL-2.0-or-later; its distribution includes
 COPYING and individual package licenses.
-
