@@ -52,8 +52,9 @@ def main() -> None:
                 env=env,
                 check=True,
             )
-            test = work / "test_runtime.py"
-            shutil.copy2(ROOT / "tests/test_runtime.py", test)
+            tests = [work / "test_runtime.py", work / "test_session.py"]
+            for test in tests:
+                shutil.copy2(ROOT / "tests" / test.name, test)
             subprocess.run(
                 [
                     python,
@@ -63,7 +64,7 @@ def main() -> None:
                     "--tb=short",
                     "-o",
                     "markers=runtime: requires the bundled R",
-                    str(test),
+                    *map(str, tests),
                 ],
                 cwd=work,
                 env=env,

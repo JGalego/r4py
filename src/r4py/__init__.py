@@ -3,7 +3,10 @@
 import os
 from collections.abc import Mapping
 from pathlib import Path
-from typing import Final
+from typing import TYPE_CHECKING, Final
+
+if TYPE_CHECKING:
+    from .session import RError, RSession, RWarning
 
 __version__ = "4.6.2.3"
 
@@ -12,7 +15,17 @@ R: Final = R_HOME / ("bin/x64/R.exe" if os.name == "nt" else "bin/R")
 RSCRIPT: Final = R_HOME / ("bin/x64/Rscript.exe" if os.name == "nt" else "bin/Rscript")
 R_VERSION: Final = tuple(int(part) for part in __version__.split(".")[:3])
 
-__all__ = ["R", "R_HOME", "R_VERSION", "RSCRIPT", "__version__", "get_env"]
+__all__ = [
+    "R",
+    "R_HOME",
+    "R_VERSION",
+    "RError",
+    "RSCRIPT",
+    "RSession",
+    "RWarning",
+    "__version__",
+    "get_env",
+]
 
 
 def get_env(overrides: Mapping[str, str] | None = None) -> dict[str, str]:
@@ -31,3 +44,13 @@ def get_env(overrides: Mapping[str, str] | None = None) -> dict[str, str]:
     env.pop("R_ARCH", None)
     env.pop("R_LD_LIBRARY_PATH", None)
     return env
+
+
+def __getattr__(name: str) -> object:
+    # Loaded lazily: build tooling executes this file with runpy, where relative
+    # imports are unavailable, and most users never start a session.
+    if name in {"RError", "RSession", "RWarning"}:
+        from . import session
+
+        return getattr(session, name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
