@@ -120,6 +120,8 @@ uv run --no-sync python build_r_runtime.py
 uv build --wheel
 ```
 
+Optional: install the git hooks with `uvx pre-commit install`. They run ruff, pyright and basic file checks; `uv sync --no-install-project` must have been run first for pyright.
+
 Unix builds need a C/C++/Fortran toolchain, make, tar, a CA certificate bundle, and development files for curl, bzip2, xz, zlib, PCRE2, ICU, readline, Cairo, PNG, JPEG, and TIFF. For example, use the manylinux container recipe in [the wheel workflow](.github/workflows/wheels.yml). `--jobs N` controls compilation parallelism. `--source-archive PATH` uses a local tarball with the same pinned SHA-256 verification.
 
 On Windows, or to reuse a native R installation:
@@ -177,4 +179,3 @@ gh workflow run wheels.yml --ref v4.6.2.2 -f publish=true
 ```
 
 Publishing uses the `pypi` GitHub environment. Add required reviewers if the repository's billing plan supports them; otherwise the explicit manual publish input is the release gate. Before publishing, verify third-party notices and make the exact corresponding sources for R and bundled dependencies available alongside the binaries.
-
