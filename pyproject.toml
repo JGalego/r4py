@@ -71,6 +71,7 @@ include = [
     "/hatch_build.py",
     "/pyproject.toml",
     "/README.md",
+    "/CHANGELOG.md",
     "/logo.svg",
     "/LICENSE",
     "/uv.lock",
