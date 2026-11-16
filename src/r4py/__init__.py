@@ -12,7 +12,7 @@ R: Final = R_HOME / ("bin/x64/R.exe" if os.name == "nt" else "bin/R")
 RSCRIPT: Final = R_HOME / ("bin/x64/Rscript.exe" if os.name == "nt" else "bin/Rscript")
 R_VERSION: Final = tuple(int(part) for part in __version__.split(".")[:3])
 
-__all__ = ["R", "R_HOME", "R_VERSION", "RSCRIPT", "get_env"]
+__all__ = ["R", "R_HOME", "R_VERSION", "RSCRIPT", "__version__", "get_env"]
 
 
 def get_env(overrides: Mapping[str, str] | None = None) -> dict[str, str]:
